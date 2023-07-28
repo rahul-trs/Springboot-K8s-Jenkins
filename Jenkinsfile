@@ -23,7 +23,6 @@ pipeline {
                 sh 'docker tag springboot-k8s-jenkins rahul9198/springboot-k8s-jenkins:k8s-1'
             }
         }
-
         stage("Push Image to Docker Hub") {
             environment {
                 DOCKER_HUB_USERNAME = credentials('DOCKER_HUB_USERNAME')
