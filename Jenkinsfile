@@ -4,7 +4,8 @@ pipeline {
     stages {
         stage("Git Clone") {
             steps {
-                git credentialsId: 'GIT_HUB_CREDENTIALS', url: 'https://github.com/rahul-trs/Springboot-K8s-Jenkins.git'
+                echo "passed"
+                //git credentialsId: 'GIT_HUB_CREDENTIALS', url: 'https://github.com/rahul-trs/Springboot-K8s-Jenkins.git'
             }
         }
 
