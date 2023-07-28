@@ -1,40 +1,46 @@
-pipeline { 
-  agent any
- 
+pipeline {
+  agent any 
   stages {
-    stage("Git clone") {
-        steps {
-          git credentialsId: 'GIT_HUB_CREDENTIALS', url: 'https://github.com/rahul-trs/Springboot-K8s-Jenkins.git'
-        }
-    }
-
-    stage("Gradle Build") {
-       steps {
-         sh './gradlew build'
-       }
-    }
-    stage("Docker build") {
+    stage('Checkout') {
       steps {
-        sh 'docker version'
-        sh 'docker build -t springboot-k8s-jenkins .'
-        sh 'docker image list'
-        sh 'docker tag springboot-k8s-jenkins rahul9198/springboot-k8s-jenkins:k8s-1'
-     }
+        sh 'echo passed'
+        //git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
+      }
     }
-   stage("Push Image to Docker Hub") {
-     environment {
-       DOCKER_HUB_USERNAME = credentials('DOCKER_HUB_USERNAME)
-       DOCKER_HUB_PASSWORD = credentials('DOCKER_HUB_PASSWORD')
-     }
-     steps {
-       sh 'docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD'
-       sh 'docker push rahul9198/springboot-k8s-jenkins:k8s-1'
-     }
-   }
-   stage("Kubernetes deployment") {
-            steps {
-                sh 'kubectl apply -f k8s-spring-boot-deployment.yml'
+    stage('Build and Push Docker Image') {
+      environment {
+        DOCKER_IMAGE = "rahul9198/springboot-k8s-jenkins:${BUILD_NUMBER}"
+        // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
+        REGISTRY_CREDENTIALS = credentials('docker-cred')
+      }
+      steps {
+        script {
+            sh 'docker build -t ${DOCKER_IMAGE} .'
+            def dockerImage = docker.image("${DOCKER_IMAGE}")
+            docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                dockerImage.push()
+            }
+        }
+      }
+    }
+    stage('Update Deployment File') {
+        environment {
+            GIT_REPO_NAME = "Springboot-K8s-Jenkins"
+            GIT_USER_NAME = "rahul-trs"
+        }
+        steps {
+            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                sh '''
+                    git config user.email "rahul.xyz@gmail.com"
+                    git config user.name "Rahul"
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" k8s-spring-boot-deployment.yml
+                    git add k8s-spring-boot-deployment.yml
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                '''
             }
         }
     }
+  }
 }
