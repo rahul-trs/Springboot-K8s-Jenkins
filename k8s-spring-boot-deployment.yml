@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jhooq-springboot
+  name: xenopsys-springboot
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: jhooq-springboot
+      app: xenopsys-springboot
   template:
     metadata:
       labels:
-        app: jhooq-springboot
+        app: xenopsys-springboot
     spec:
       containers:
         - name: springboot
-          image: rahulwagh17/jhooq-docker-demo:jhooq-docker-demo
+          image: rahul9198/springboot-k8s-jenkins:k8s-demo
           ports:
             - containerPort: 8080
           env:
@@ -23,12 +23,12 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-metadata:
-  name: jhooq-springboot
+metadata: xenopsys-springboot
+  name: 
 spec:
   type: LoadBalancer
   ports:
     - port: 80
       targetPort: 8080
   selector:
-    app: jhooq-springboot
+    app: xenopsys-springboot
