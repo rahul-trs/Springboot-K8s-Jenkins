@@ -37,6 +37,7 @@ pipeline {
                     sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" k8s-spring-boot-deployment.yml
                     git add k8s-spring-boot-deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                    git pull 
                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                 '''
             }
