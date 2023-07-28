@@ -24,7 +24,7 @@ pipeline {
       }
     }
     stage('Update Deployment File') {
-        environment {
+         environment {
             GIT_REPO_NAME = "Springboot-K8s-Jenkins"
             GIT_USER_NAME = "rahul-trs"
         }
@@ -39,8 +39,8 @@ pipeline {
                     git add k8s-spring-boot-deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                     git pull origin master
-                    \* git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
-                    echo 'echo passed'
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+                    \* echo 'echo passed'
                 '''
             }
         }
