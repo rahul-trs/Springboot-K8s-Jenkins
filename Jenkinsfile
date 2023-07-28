@@ -31,7 +31,7 @@ pipeline {
         steps {
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    git checkout master
+                    /* git checkout master
                     git config user.email "rahul.xyz@gmail.com"
                     git config user.name "Rahul"
                     BUILD_NUMBER=${BUILD_NUMBER}
@@ -39,7 +39,8 @@ pipeline {
                     git add k8s-spring-boot-deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                     git pull origin master
-                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+                    \* git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+                    echo 'echo passed'
                 '''
             }
         }
